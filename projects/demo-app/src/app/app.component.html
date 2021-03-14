@@ -1,0 +1,16 @@
+<nav ngxHideOnScroll [propertyUsedToHide]="'top'" [valueWhenHidden]="'-100px'" [valueWhenShown]="'0px'">
+  <h2>Navbar</h2>
+</nav>
+
+<h1 style="margin-top: 100px;">
+  Scroll down to hide the navbar and the fixed footer. Scroll up to show them again.
+</h1>
+
+<p *ngFor="let item of getArray(200)">
+  Scroll down to hide the navbar and the fixed footer. Scroll up to show them again.
+</p>
+
+<div class="fixed-footer" ngxHideOnScroll [propertyUsedToHide]="'bottom'" [valueWhenHidden]="'-100px'"
+  [valueWhenShown]="'0px'">
+  <h2>Fixed footer, with transition on hide/show.</h2>
+</div>

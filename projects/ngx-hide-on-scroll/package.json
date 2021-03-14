@@ -1,0 +1,27 @@
+{
+  "name": "ngx-hide-on-scroll",
+  "version": "0.1.0",
+  "peerDependencies": {
+    "@angular/common": "^11.2.5",
+    "@angular/core": "^11.2.5"
+  },
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "description": "Hide an element on scroll down or up in Angular.",
+  "keywords": [
+    "angular",
+    "scroll",
+    "hide",
+    "element"
+  ],
+  "homepage": "https://github.com/TheJLifeX/ngx-hide-on-scroll#readme",
+  "bugs": {
+    "url": "https://github.com/TheJLifeX/ngx-hide-on-scroll/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheJLifeX/ngx-hide-on-scroll.git"
+  },
+  "license": "MIT"
+}
