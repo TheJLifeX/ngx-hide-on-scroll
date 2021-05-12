@@ -1,13 +1,11 @@
 {
   "name": "ngx-hide-on-scroll",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "build:ngx-hide-on-scroll:watch": "ng build ngx-hide-on-scroll --watch",
+    "dev": "ng serve",
     "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "publish-ngx-hide-on-scroll-to-npm": "ng build ngx-hide-on-scroll --prod && cd dist/ngx-hide-on-scroll && npm publish"
   },
   "private": true,
   "dependencies": {

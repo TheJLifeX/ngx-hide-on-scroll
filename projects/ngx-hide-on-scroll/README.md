@@ -24,7 +24,7 @@ import { NgxHideOnScrollModule } from 'ngx-hide-on-scroll';
   declarations: [AppComponent],
   imports: [
     BrowserModule,
-    NgxHideOnScrollModule // Import NgxHideOnScrollModule
+    NgxHideOnScrollModule.forRoot() // Import NgxHideOnScrollModule
   ],
   providers: [],
   bootstrap: [AppComponent]
@@ -71,13 +71,37 @@ nav {
 ```
 
 ## Documentation
-| `@Input()`               | Type                                   | Required | Default    | Description                                                                                                                                                                                                                                                                                                                                                               |
-|--------------------------|----------------------------------------|----------|------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| hideOnScroll             | `'Down'` \| `'Up'`                     | optional | `'Down'`   | `'Down'`: The element will be hidden on scroll down and it will be shown again on scroll up.<br/>`Up`: The element will be hidden on scroll up and it will be shown again on scroll down.                                                                                                                                                                                 |
-| propertyUsedToHide       | `'top'` \| `'bottom'` \| `'height'` | optional | `'top'`    | The CSS property used to hide/show the element.                                                                                                                                                                                                                                                                                                                           |
-| valueWhenHidden          | string                                 | optional | `'-100px'` | The value of the `propertyUsedToHide` when the element is hidden.                                                                                                                                                                                                                                                                                                         |
-| valueWhenShown           | string                                 | optional | `'0px'`    | The value of the `propertyUsedToHide` when the element is shown.                                                                                                                                                                                                                                                                                                          |
-| scrollingElementSelector | string                                 | optional |  none      | The selector of the element you want to listen the scroll event, in case it is not the browser default scrolling element (`document.scrollingElement` or `document.documentElement`). For example [`'.mat-sidenav-content'`]( https://stackoverflow.com/a/52931772/12954396) if you are using [Angular Material Sidenav]( https://material.angular.io/components/sidenav). |
+### NgxHideOnScroll directive and NgxHideOnScrollConfig
+| Parameter               | Type                                | Required | Default     | Description                                                                                                                                                                                                                                                                                                                                                                |
+|--------------------------|-------------------------------------|----------|-------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| hideOnScroll             | `'Down'` \| `'Up'`                  | optional | `'Down'`    | `'Down'`: The element will be hidden on scroll down and it will be shown again on scroll up. `Up`: The element will be hidden on scroll up and it will be shown again on scroll down.                                                                                                                                                                                      |
+| propertyUsedToHide       | `'top'` \| `'bottom'` \| `'height'` | optional | `'top'`     | The CSS property used to hide/show the element.                                                                                                                                                                                                                                                                                                                            |
+| valueWhenHidden          | string                              | optional | `'-100px'`  | The value of the `propertyUsedToHide` when the element is hidden.                                                                                                                                                                                                                                                                                                          |
+| valueWhenShown           | string                              | optional | `'0px'`     | The value of the `propertyUsedToHide` when the element is shown.                                                                                                                                                                                                                                                                                                           |
+| scrollingElementSelector | string                              | optional | `undefined` | The selector of the element you want to listen the scroll event, in case it is not the browser default scrolling element (`document.scrollingElement` or `document.documentElement`). For example [`'.mat-sidenav-content'`]( https://stackoverflow.com/a/52931772/12954396) if you are using [Angular Material Sidenav]( https://material.angular.io/components/sidenav). |
+| throttleDuration         | number                              | optional | 50          | The throttle duration in milliseconds. It is used to throttle the 'scroll' event stream with the use of the [Rxjs throttleTime](https://www.learnrxjs.io/learn-rxjs/operators/filtering/throttletime) operator to get better performance.                                                                                                                                  |
+
+### NgxHideOnScrollModule
+
+#### - Use this method in your root module. Here, you can set up a global `config`.
+```ts
+NgxHideOnScrollModule.forRoot(config?: NgxHideOnScrollConfig)
+```
+Example:
+```ts
+NgxHideOnScrollModule.forRoot({
+  scrollingElementSelector: '.mat-sidenav-content'
+});
+```
+
+#### - Use this method in your other (non root) modules. Here, you can set up a `config` for a specific module. If no `config` is passed as argument, the `config` passed using the `forRoot` method will be used if it exists.
+```ts
+NgxHideOnScrollModule.forChild(config?: NgxHideOnScrollConfig)
+```
+Example:
+```ts
+NgxHideOnScrollModule.forChild();
+```
 
 ## License
 MIT

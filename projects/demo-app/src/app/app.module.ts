@@ -11,7 +11,7 @@ import { NgxHideOnScrollModule } from 'ngx-hide-on-scroll';
   ],
   imports: [
     BrowserModule,
-    NgxHideOnScrollModule
+    NgxHideOnScrollModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
