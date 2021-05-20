@@ -10,6 +10,7 @@ import {
   throttleTime
 } from 'rxjs/operators';
 import { isPlatformServer } from '@angular/common';
+import { NgxHideOnScrollService } from './ngx-hide-on-scroll.service';
 
 // Inspired by: https://netbasal.com/reactive-sticky-header-in-angular-12dbffb3f1d3
 
@@ -17,10 +18,10 @@ import { isPlatformServer } from '@angular/common';
  * The `ngxHideOnScroll` directive allows you to hide an html element (e.g. navbar) on scroll down and show it again on scroll up.
  */
 @Directive({
-  selector: '[ngxHideOnScroll]'
+  selector: '[ngxHideOnScroll]',
+  exportAs: 'ngxHideOnScroll'
 })
 export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
-
   /**
    * `'Down'`: The element will be hidden on scroll down and it will be shown again on scroll up.<br/>`Up`: The element will be hidden on scroll up and it will be shown again on scroll down.
    */
@@ -47,16 +48,32 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
   @Input() scrollingElementSelector: string = '';
 
   private unsubscribeNotifier = new Subject();
+  private destroyedNotifier = new Subject();
 
   constructor(
+    private s: NgxHideOnScrollService,
     private elementRef: ElementRef<HTMLElement>,
     @Inject(PLATFORM_ID) private platformId: string
-  ) { }
+  ) {}
 
   ngAfterViewInit() {
+    this.init();
+
+    this.s.scrollingElementsDetected$
+      .pipe(takeUntil(this.destroyedNotifier))
+      .subscribe(() => this.init());
+  }
+
+  ngOnDestroy() {
+    this.reset(true);
+  }
+
+  init() {
     if (isPlatformServer(this.platformId)) {
       return;
     }
+
+    this.reset();
 
     let elementToListenScrollEvent;
     let scrollingElement: HTMLElement;
@@ -66,7 +83,7 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
     } else {
       scrollingElement = document.querySelector(this.scrollingElementSelector) as HTMLElement;
       if (!scrollingElement) {
-        console.error(`NgxHideOnScroll: @Input() scrollingElementSelector\nElement with selector: "${this.scrollingElementSelector}" not found.`);
+        console.warn(`NgxHideOnScroll: @Input() scrollingElementSelector\nElement with selector: "${this.scrollingElementSelector}" not found.`);
         return;
       }
       elementToListenScrollEvent = scrollingElement;
@@ -105,16 +122,20 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
     scrollDown$.subscribe(() => scrollDownAction());
   }
 
-  ngOnDestroy(): void {
+  private reset(destroyed?: boolean) {
     this.unsubscribeNotifier.next();
     this.unsubscribeNotifier.complete();
+    if(destroyed) {
+      this.destroyedNotifier.next();
+      this.destroyedNotifier.complete();
+    }
   }
 
-  private hideElement() {
+  hideElement() {
     this.elementRef.nativeElement.style[this.propertyUsedToHide] = this.valueWhenHidden;
   }
 
-  private showElement() {
+  showElement() {
     this.elementRef.nativeElement.style[this.propertyUsedToHide] = this.valueWhenShown;
   }
 
