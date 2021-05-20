@@ -30,17 +30,17 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
   /**
    * The CSS property used to hide/show the element.
    */
-  @Input() propertyUsedToHide: 'top' | 'bottom' | 'height' = 'top';
+  @Input() propertyUsedToHide: 'top' | 'bottom' | 'height' | 'transform' = 'transform';
 
   /**
    * The value of `propertyUsedToHide` when the element is hidden.
    */
-  @Input() valueWhenHidden: string = '-100px';
+  @Input() valueWhenHidden: string = 'translateY(-100%)';
 
   /**
    * The value of `propertyUsedToHide` when the element is shown.
    */
-  @Input() valueWhenShown: string = '0px';
+  @Input() valueWhenShown: string = 'translateY(0)';
 
   /**
    * The selector of the element you want to listen the scroll event, in case it is not the default browser scrolling element (`document.scrollingElement` or `document.documentElement`). For example [` .mat-sidenav-content`]( https://stackoverflow.com/a/52931772/12954396) if you are using [Angular Material Sidenav]( https://material.angular.io/components/sidenav)
@@ -125,18 +125,25 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
   private reset(destroyed?: boolean) {
     this.unsubscribeNotifier.next();
     this.unsubscribeNotifier.complete();
-    if(destroyed) {
+    if (destroyed) {
       this.destroyedNotifier.next();
       this.destroyedNotifier.complete();
     }
   }
 
+  private _isHidden: boolean = false;
+  get isHidden() {
+    return this._isHidden;
+  }
+
   hideElement() {
     this.elementRef.nativeElement.style[this.propertyUsedToHide] = this.valueWhenHidden;
+    this._isHidden = true;
   }
 
   showElement() {
     this.elementRef.nativeElement.style[this.propertyUsedToHide] = this.valueWhenShown;
+    this._isHidden = false;
   }
 
   private getDefaultScrollingElement() {
