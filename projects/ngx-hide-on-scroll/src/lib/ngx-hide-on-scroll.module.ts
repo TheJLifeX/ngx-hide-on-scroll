@@ -7,7 +7,6 @@ import { NgxHideOnScrollService } from './ngx-hide-on-scroll.service';
 @NgModule({
   declarations: [NgxHideOnScrollDirective, NgxDetectHideOnScrollDirective],
   imports: [],
-  providers: [NgxHideOnScrollService],
   exports: [NgxHideOnScrollDirective, NgxDetectHideOnScrollDirective]
 })
 export class NgxHideOnScrollModule { }

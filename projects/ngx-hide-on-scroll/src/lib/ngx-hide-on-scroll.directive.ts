@@ -1,4 +1,4 @@
-import { Directive, ElementRef, AfterViewInit, Inject, PLATFORM_ID, OnDestroy, Input } from '@angular/core';
+import { Directive, ElementRef, AfterViewInit, Inject, PLATFORM_ID, OnDestroy, Input, Output, EventEmitter } from '@angular/core';
 import { fromEvent, Subject } from 'rxjs';
 import {
   distinctUntilChanged,
@@ -46,6 +46,8 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
    * The selector of the element you want to listen the scroll event, in case it is not the default browser scrolling element (`document.scrollingElement` or `document.documentElement`). For example [` .mat-sidenav-content`]( https://stackoverflow.com/a/52931772/12954396) if you are using [Angular Material Sidenav]( https://material.angular.io/components/sidenav)
    */
   @Input() scrollingElementSelector: string = '';
+
+  @Output() hideOnScrollChanged = new EventEmitter<IHideOnScrollChangedEvent>();
 
   private unsubscribeNotifier = new Subject();
   private destroyedNotifier = new Subject();
@@ -111,11 +113,11 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
     let scrollUpAction: () => void;
     let scrollDownAction: () => void;
     if (this.hideOnScroll === 'Up') {
-      scrollUpAction = () => this.hideElement();
-      scrollDownAction = () => this.showElement();
+      scrollUpAction = () => this.hideElement(scrollingElement);
+      scrollDownAction = () => this.showElement(scrollingElement);
     } else {
-      scrollUpAction = () => this.showElement();
-      scrollDownAction = () => this.hideElement();
+      scrollUpAction = () => this.showElement(scrollingElement);
+      scrollDownAction = () => this.hideElement(scrollingElement);
     }
 
     scrollUp$.subscribe(() => scrollUpAction());
@@ -136,22 +138,36 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
     return this._isHidden;
   }
 
-  hideElement() {
+  hideElement(scrollingElem?: HTMLElement) {
     this.elementRef.nativeElement.style[this.propertyUsedToHide] = this.valueWhenHidden;
     this._isHidden = true;
+    this.emitChange();
   }
 
-  showElement() {
+  showElement(scrollingElem?: HTMLElement) {
     this.elementRef.nativeElement.style[this.propertyUsedToHide] = this.valueWhenShown;
     this._isHidden = false;
+    this.emitChange();
   }
 
   private getDefaultScrollingElement() {
     return (document.scrollingElement || document.documentElement) as HTMLElement;
+  }
+
+  private emitChange(scrollingElem?: HTMLElement) {
+    const hideElem = this.elementRef.nativeElement;
+    const hidden = this.isHidden;
+    this.hideOnScrollChanged.emit({hidden, hideElem, scrollingElem});
   }
 }
 
 enum ScrollDirection {
   Up = 'Up',
   Down = 'Down'
+}
+
+export interface IHideOnScrollChangedEvent {
+  hidden: boolean;
+  hideElem: HTMLElement;
+  scrollingElem?: HTMLElement;
 }
