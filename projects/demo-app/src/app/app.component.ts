@@ -6,7 +6,16 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  getArray(n: number) {
+
+  getArray(n: number): Array<void> {
     return new Array(n);
+  }
+
+  onEventFooterElementHidden(): void {
+    console.log('onEventFooterElementHidden');
+  }
+
+  onEventFooterElementShown(): void {
+    console.log('onEventFooterElementShown');
   }
 }

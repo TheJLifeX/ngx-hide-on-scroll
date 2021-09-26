@@ -1,4 +1,4 @@
-<nav ngxHideOnScroll [propertyUsedToHide]="'top'" [valueWhenHidden]="'-100px'" [valueWhenShown]="'0px'">
+<nav ngxHideOnScroll [classNameWhenHidden]="'nav--hidden'">
   <h2>Navbar</h2>
 </nav>
 
@@ -10,7 +10,8 @@
   Scroll down to hide the navbar and the fixed footer. Scroll up to show them again.
 </p>
 
-<div class="fixed-footer" ngxHideOnScroll [propertyUsedToHide]="'bottom'" [valueWhenHidden]="'-100px'"
-  [valueWhenShown]="'0px'">
+<div class="fixed-footer" ngxHideOnScroll [propertyUsedToHide]="'transform'" [valueWhenHidden]="'translateY(100%)'"
+  [valueWhenShown]="'translateY(0%)'" (eventElementHidden)="onEventFooterElementHidden()"
+  (eventElementShown)="onEventFooterElementShown()">
   <h2>Fixed footer, with transition on hide/show.</h2>
 </div>

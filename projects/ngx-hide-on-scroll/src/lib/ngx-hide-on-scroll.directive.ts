@@ -1,4 +1,4 @@
-import { Directive, ElementRef, AfterViewInit, Inject, PLATFORM_ID, OnDestroy, Input } from '@angular/core';
+import { Directive, ElementRef, AfterViewInit, Inject, PLATFORM_ID, OnDestroy, Input, Renderer2, Output, EventEmitter } from '@angular/core';
 import { fromEvent, Subject } from 'rxjs';
 import {
   distinctUntilChanged,
@@ -27,33 +27,58 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
   @Input() hideOnScroll: 'Down' | 'Up' = 'Down';
 
   /**
-   * The CSS property used to hide/show the element.
+   * CSS class name added to the element to hide it. When this property is set, `propertyUsedToHide`, `valueWhenHidden`, and `valueWhenShown` have not effect.
    */
-  @Input() propertyUsedToHide: 'top' | 'bottom' | 'height' = 'top';
+  @Input() classNameWhenHidden: string = '';
+
+  /**
+   * The CSS property used to hide/show the element.
+   * 
+   * @default
+   * 'transform'
+   */
+  @Input() propertyUsedToHide: 'transform' | 'top' | 'bottom' | 'height' = 'transform';
 
   /**
    * The value of `propertyUsedToHide` when the element is hidden.
+   * 
+   * @default
+   * 'translateY(-100%)'
    */
-  @Input() valueWhenHidden: string = '-100px';
+  @Input() valueWhenHidden: string = 'translateY(-100%)';
 
   /**
    * The value of `propertyUsedToHide` when the element is shown.
+   * 
+   * @default
+   * 'translateY(0)'
    */
-  @Input() valueWhenShown: string = '0px';
+  @Input() valueWhenShown: string = 'translateY(0)';
 
   /**
    * The selector of the element you want to listen the scroll event, in case it is not the default browser scrolling element (`document.scrollingElement` or `document.documentElement`). For example [` .mat-sidenav-content`]( https://stackoverflow.com/a/52931772/12954396) if you are using [Angular Material Sidenav]( https://material.angular.io/components/sidenav)
    */
   @Input() scrollingElementSelector: string = '';
 
+  /**
+   * Emitted when the element is hidden.
+   */
+  @Output() eventElementHidden = new EventEmitter<void>();
+
+  /**
+   * Emitted when the element is shown.
+   */
+  @Output() eventElementShown = new EventEmitter<void>();
+
   private unsubscribeNotifier = new Subject();
 
   constructor(
     private elementRef: ElementRef<HTMLElement>,
+    private renderer2: Renderer2,
     @Inject(PLATFORM_ID) private platformId: string
   ) { }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     if (isPlatformServer(this.platformId)) {
       return;
     }
@@ -110,15 +135,27 @@ export class NgxHideOnScrollDirective implements AfterViewInit, OnDestroy {
     this.unsubscribeNotifier.complete();
   }
 
-  private hideElement() {
-    this.elementRef.nativeElement.style[this.propertyUsedToHide] = this.valueWhenHidden;
+  private hideElement(): void {
+    const nativeElement = this.elementRef.nativeElement;
+    if (this.classNameWhenHidden) {
+      this.renderer2.addClass(nativeElement, this.classNameWhenHidden);
+    } else {
+      this.renderer2.setStyle(nativeElement, this.propertyUsedToHide, this.valueWhenHidden);
+    }
+    this.eventElementHidden.emit();
   }
 
-  private showElement() {
-    this.elementRef.nativeElement.style[this.propertyUsedToHide] = this.valueWhenShown;
+  private showElement(): void {
+    const nativeElement = this.elementRef.nativeElement;
+    if (this.classNameWhenHidden) {
+      this.renderer2.removeClass(nativeElement, this.classNameWhenHidden);
+    } else {
+      this.renderer2.setStyle(nativeElement, this.propertyUsedToHide, this.valueWhenShown);
+    }
+    this.eventElementShown.emit();
   }
 
-  private getDefaultScrollingElement() {
+  private getDefaultScrollingElement(): HTMLElement {
     return (document.scrollingElement || document.documentElement) as HTMLElement;
   }
 }
