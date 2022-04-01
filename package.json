@@ -4,7 +4,8 @@
   "scripts": {
     "dev--ngx-hide-on-scroll": "ng build ngx-hide-on-scroll --watch",
     "dev--demo-app": "ng serve demo-app",
-    "publish--ngx-hide-on-scroll": "ng build ngx-hide-on-scroll --prod && cd dist/ngx-hide-on-scroll && npm publish"
+    "build": "powershell rm ./dist/* -Recurse && ng build ngx-hide-on-scroll --configuration=production && powershell cp ./LICENSE,./README.md ./dist/ngx-hide-on-scroll/",
+    "publish-library": "npm run build && npm publish ./dist/ngx-hide-on-scroll/ && powershell rm ./dist/* -Recurse"
   },
   "private": true,
   "dependencies": {
