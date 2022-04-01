@@ -1,6 +1,6 @@
 {
   "name": "ngx-hide-on-scroll",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "scripts": {
     "dev--ngx-hide-on-scroll": "ng build ngx-hide-on-scroll --watch",
     "dev--demo-app": "ng serve demo-app",
